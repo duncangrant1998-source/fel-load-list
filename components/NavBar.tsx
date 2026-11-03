@@ -1,0 +1,123 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
+import type { Profile } from "@/lib/types";
+
+export default function NavBar() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [unread, setUnread] = useState(0);
+
+  useEffect(() => {
+    const supabase = createClient();
+    let unsub: (() => void) | undefined;
+
+    (async () => {
+      const { data: userRes } = await supabase.auth.getUser();
+      const user = userRes.user;
+      if (!user) return;
+
+      const { data: profileRow } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+      if (profileRow) setProfile(profileRow as Profile);
+
+      const refreshUnread = async () => {
+        const { count } = await supabase
+          .from("notifications")
+          .select("id", { count: "exact", head: true })
+          .eq("recipient_id", user.id)
+          .is("read_at", null);
+        setUnread(count ?? 0);
+      };
+      await refreshUnread();
+
+      const channel = supabase
+        .channel("nav-notifications")
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "notifications",
+            filter: `recipient_id=eq.${user.id}`,
+          },
+          () => refreshUnread()
+        )
+        .subscribe();
+
+      unsub = () => supabase.removeChannel(channel);
+    })();
+
+    return () => unsub?.();
+  }, []);
+
+  async function handleSignOut() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/login");
+    router.refresh();
+  }
+
+  const linkClass = (href: string) =>
+    `rounded-md px-3 py-1.5 text-sm font-medium transition ${
+      pathname === href || pathname?.startsWith(href + "/")
+        ? "bg-fel-panel2 text-white"
+        : "text-neutral-400 hover:text-white"
+    }`;
+
+  return (
+    <header className="sticky top-0 z-20 border-b border-fel-border bg-fel-bg/95 backdrop-blur">
+      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
+        <div className="flex items-center gap-6">
+          <Link href="/dashboard" className="flex items-center gap-2">
+            <div className="h-6 w-1.5 rounded bg-fel-red" />
+            <span className="text-sm font-semibold tracking-tight">
+              FEL Load List
+            </span>
+          </Link>
+          <nav className="flex items-center gap-1">
+            <Link href="/dashboard" className={linkClass("/dashboard")}>
+              Load lists
+            </Link>
+            <Link href="/notifications" className={linkClass("/notifications")}>
+              Notifications
+              {unread > 0 && (
+                <span className="ml-1.5 inline-flex min-w-[1.25rem] items-center justify-center rounded-full bg-fel-red px-1.5 py-0.5 text-[10px] font-bold text-white">
+                  {unread}
+                </span>
+              )}
+            </Link>
+            {profile?.is_admin && (
+              <Link href="/admin/team" className={linkClass("/admin/team")}>
+                Team
+              </Link>
+            )}
+          </nav>
+        </div>
+        <div className="flex items-center gap-3">
+          {profile && (
+            <div className="text-right leading-tight">
+              <div className="text-sm font-medium">{profile.full_name}</div>
+              <div className="text-xs uppercase tracking-wide text-neutral-500">
+                {profile.role === "manager" ? "Warehouse Manager" : "Team member"}
+              </div>
+            </div>
+          )}
+          <button
+            onClick={handleSignOut}
+            className="rounded-md border border-fel-border px-3 py-1.5 text-xs font-medium text-neutral-300 hover:bg-fel-panel2"
+          >
+            Sign out
+          </button>
+        </div>
+      </div>
+    </header>
+  );
+}
