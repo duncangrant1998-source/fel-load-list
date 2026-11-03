@@ -64,7 +64,7 @@ export default function SetPasswordPage() {
           <p className="text-sm text-neutral-400">
             This invite link isn&apos;t valid anymore. Ask your team lead to
             send you a new invite, or{" "}
-            <a href="/login" className="text-fel-blue underline">
+            <a href="/login" className="text-fel-red underline">
               sign in
             </a>{" "}
             if you&apos;ve already set a password.
@@ -77,7 +77,7 @@ export default function SetPasswordPage() {
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-sm rounded-xl border border-fel-border bg-fel-panel p-8 shadow-xl">
-        <h1 className="mb-2 text-xl font-semibold">Set your password</h1>
+        <h1 className="mb-2 text-xl font-semibold uppercase tracking-wide">Set your password</h1>
         <p className="mb-6 text-sm text-neutral-400">
           Choose a password to finish setting up your FEL Load List account.
         </p>
@@ -91,7 +91,7 @@ export default function SetPasswordPage() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-lg border border-fel-border bg-fel-panel2 px-3 py-2 text-sm outline-none focus:border-fel-blue"
+              className="w-full rounded-lg border border-fel-border bg-fel-panel2 px-3 py-2 text-sm outline-none focus:border-fel-red"
             />
           </div>
           <div>
@@ -103,7 +103,7 @@ export default function SetPasswordPage() {
               required
               value={confirm}
               onChange={(e) => setConfirm(e.target.value)}
-              className="w-full rounded-lg border border-fel-border bg-fel-panel2 px-3 py-2 text-sm outline-none focus:border-fel-blue"
+              className="w-full rounded-lg border border-fel-border bg-fel-panel2 px-3 py-2 text-sm outline-none focus:border-fel-red"
             />
           </div>
           {error && (

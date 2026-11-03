@@ -32,10 +32,11 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-sm rounded-xl border border-fel-border bg-fel-panel p-8 shadow-xl">
-        <div className="mb-6 flex items-center gap-2">
-          <div className="h-8 w-2 rounded bg-fel-red" />
-          <h1 className="text-xl font-semibold tracking-tight">
-            FEL Load List
+        <div className="mb-6 flex items-center gap-3">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/fel-icon.svg" alt="FEL" width={32} height={32} />
+          <h1 className="text-xl font-semibold uppercase tracking-wide">
+            Load List
           </h1>
         </div>
         <p className="mb-6 text-sm text-neutral-400">
@@ -52,7 +53,7 @@ export default function LoginPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-lg border border-fel-border bg-fel-panel2 px-3 py-2 text-sm outline-none focus:border-fel-blue"
+              className="w-full rounded-lg border border-fel-border bg-fel-panel2 px-3 py-2 text-sm outline-none focus:border-fel-red"
               placeholder="you@feldrives.com"
             />
           </div>
@@ -65,7 +66,7 @@ export default function LoginPage() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-lg border border-fel-border bg-fel-panel2 px-3 py-2 text-sm outline-none focus:border-fel-blue"
+              className="w-full rounded-lg border border-fel-border bg-fel-panel2 px-3 py-2 text-sm outline-none focus:border-fel-red"
               placeholder="••••••••"
             />
           </div>

@@ -6,9 +6,10 @@ import { createClient } from "@/lib/supabase/client";
 import NavBar from "@/components/NavBar";
 import AddItemForm from "@/components/AddItemForm";
 import CommentDrawer from "@/components/CommentDrawer";
+import ModeField from "@/components/ModeField";
+import ManageAccessPanel from "@/components/ManageAccessPanel";
 import {
   STATUS_LABEL,
-  TRANSPORT_MODES,
   type LoadList,
   type LoadListItem,
   type LoadListStatus,
@@ -36,7 +37,9 @@ function LoadListDetailInner() {
   );
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [activeItem, setActiveItem] = useState<LoadListItem | null>(null);
+  const [showAccess, setShowAccess] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
@@ -57,7 +60,12 @@ function LoadListDetailInner() {
         .from("load_lists")
         .select("*")
         .eq("id", listId)
-        .single();
+        .maybeSingle();
+      if (!listRow) {
+        setNotFound(true);
+        setLoading(false);
+        return;
+      }
       setList(listRow as LoadList);
 
       const { data: itemRows } = await supabase
@@ -195,6 +203,21 @@ function LoadListDetailInner() {
     await supabase.from("load_list_items").delete().eq("id", item.id);
   }
 
+  if (notFound) {
+    return (
+      <div>
+        <NavBar />
+        <div className="mx-auto max-w-5xl px-4 py-16 text-center text-neutral-500">
+          <p>
+            This load list doesn&apos;t exist, or you don&apos;t have access
+            to it. Ask whoever created it to add you under &ldquo;Manage
+            access&rdquo;.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   if (loading || !list) {
     return (
       <div>
@@ -215,33 +238,36 @@ function LoadListDetailInner() {
             <input
               defaultValue={list.program}
               onBlur={(e) => updateHeaderField("program", e.target.value)}
-              className="w-full bg-transparent text-xl font-semibold tracking-tight outline-none focus:border-b focus:border-fel-blue"
+              className="w-full bg-transparent text-xl font-semibold uppercase tracking-wide outline-none focus:border-b focus:border-fel-red"
             />
-            <select
-              defaultValue={list.status}
-              onChange={(e) => updateHeaderField("status", e.target.value as LoadListStatus)}
-              className="rounded-full border border-fel-border bg-fel-panel2 px-3 py-1 text-xs font-medium"
-            >
-              {Object.entries(STATUS_LABEL).map(([val, label]) => (
-                <option key={val} value={val}>
-                  {label}
-                </option>
-              ))}
-            </select>
+            <div className="flex shrink-0 items-center gap-2">
+              <button
+                onClick={() => setShowAccess(true)}
+                className="rounded-full border border-fel-border px-3 py-1 text-xs font-medium uppercase tracking-wide text-neutral-300 hover:bg-fel-panel2"
+              >
+                Manage access
+              </button>
+              <select
+                defaultValue={list.status}
+                onChange={(e) => updateHeaderField("status", e.target.value as LoadListStatus)}
+                className="rounded-full border border-fel-border bg-fel-panel2 px-3 py-1 text-xs font-medium uppercase tracking-wide"
+              >
+                {Object.entries(STATUS_LABEL).map(([val, label]) => (
+                  <option key={val} value={val}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
           <div className="grid grid-cols-2 gap-4 text-sm sm:grid-cols-5">
             <Field label="Program lead / contact" defaultValue={list.contact_name} onBlur={(v) => updateHeaderField("contact_name", v)} />
             <Field label="Destination" defaultValue={list.location} onBlur={(v) => updateHeaderField("location", v)} />
-            <SelectField
-              label="Mode"
-              defaultValue={list.mode}
-              options={TRANSPORT_MODES}
-              onChange={(v) => updateHeaderField("mode", v)}
-            />
+            <ModeField value={list.mode} onChange={(v) => updateHeaderField("mode", v)} />
             <Field label="Depart" type="date" defaultValue={list.depart_date ?? ""} onBlur={(v) => updateHeaderField("depart_date", v)} />
             <Field label="Return" type="date" defaultValue={list.return_date ?? ""} onBlur={(v) => updateHeaderField("return_date", v)} />
           </div>
-          <div className="mt-4 text-xs text-neutral-500">
+          <div className="mt-4 text-xs uppercase tracking-wide text-neutral-500">
             {packedCount} / {items.length} items packed
           </div>
         </div>
@@ -342,6 +368,14 @@ function LoadListDetailInner() {
           onClose={() => setActiveItem(null)}
         />
       )}
+
+      {showAccess && currentUserId && (
+        <ManageAccessPanel
+          loadListId={listId}
+          currentUserId={currentUserId}
+          onClose={() => setShowAccess(false)}
+        />
+      )}
     </div>
   );
 }
@@ -366,42 +400,8 @@ function Field({
         type={type}
         defaultValue={defaultValue}
         onBlur={(e) => onBlur(e.target.value)}
-        className="w-full rounded-md border border-fel-border bg-fel-panel2 px-2 py-1.5 text-sm outline-none focus:border-fel-blue"
+        className="w-full rounded-md border border-fel-border bg-fel-panel2 px-2 py-1.5 text-sm outline-none focus:border-fel-red"
       />
-    </div>
-  );
-}
-
-function SelectField({
-  label,
-  defaultValue,
-  options,
-  onChange,
-}: {
-  label: string;
-  defaultValue: string;
-  options: string[];
-  onChange: (value: string) => void;
-}) {
-  return (
-    <div>
-      <div className="mb-1 text-[11px] font-medium uppercase tracking-wide text-neutral-500">
-        {label}
-      </div>
-      <select
-        defaultValue={defaultValue}
-        onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-md border border-fel-border bg-fel-panel2 px-2 py-1.5 text-sm outline-none focus:border-fel-blue"
-      >
-        {!options.includes(defaultValue) && (
-          <option value={defaultValue}>{defaultValue}</option>
-        )}
-        {options.map((o) => (
-          <option key={o} value={o}>
-            {o}
-          </option>
-        ))}
-      </select>
     </div>
   );
 }

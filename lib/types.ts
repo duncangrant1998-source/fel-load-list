@@ -62,11 +62,20 @@ export interface AppNotification {
   read_at: string | null;
 }
 
+export interface LoadListMember {
+  load_list_id: string;
+  user_id: string;
+  added_by: string | null;
+  created_at: string;
+}
+
+// Fixed options shown in the mode picker. "Other" reveals a free-text field
+// so a one-off method of transportation can be typed in instead.
 export const TRANSPORT_MODES = [
-  "Straight Truck",
-  "Tractor Trailer",
-  "Cargo Van",
-  "Air Freight",
+  "White F150",
+  "Blue F150",
+  "E450",
+  "FEL Motorsports Hauler",
   "Other",
 ];
 

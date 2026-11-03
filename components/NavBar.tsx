@@ -76,10 +76,11 @@ export default function NavBar() {
     <header className="sticky top-0 z-20 border-b border-fel-border bg-fel-bg/95 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
         <div className="flex items-center gap-6">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <div className="h-6 w-1.5 rounded bg-fel-red" />
-            <span className="text-sm font-semibold tracking-tight">
-              FEL Load List
+          <Link href="/dashboard" className="flex items-center gap-2.5">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/fel-icon.svg" alt="FEL" width={22} height={22} />
+            <span className="text-sm font-semibold uppercase tracking-wide">
+              Load List
             </span>
           </Link>
           <nav className="flex items-center gap-1">
@@ -101,7 +102,13 @@ export default function NavBar() {
             )}
           </nav>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
+          <span
+            aria-hidden
+            className="hidden select-none text-lg font-bold italic leading-none text-fel-red sm:inline"
+          >
+            //
+          </span>
           {profile && (
             <div className="text-right leading-tight">
               <div className="text-sm font-medium">{profile.full_name}</div>

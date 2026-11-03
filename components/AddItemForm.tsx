@@ -52,7 +52,7 @@ export default function AddItemForm({
         value={category}
         onChange={(e) => setCategory(e.target.value)}
         placeholder="Category"
-        className="col-span-2 rounded-md border border-fel-border bg-fel-panel2 px-2 py-1.5 text-sm outline-none focus:border-fel-blue"
+        className="col-span-2 rounded-md border border-fel-border bg-fel-panel2 px-2 py-1.5 text-sm outline-none focus:border-fel-red"
       />
       <datalist id="categories">
         {categories.map((c) => (
@@ -63,19 +63,19 @@ export default function AddItemForm({
         value={name}
         onChange={(e) => setName(e.target.value)}
         placeholder="Item name"
-        className="col-span-4 rounded-md border border-fel-border bg-fel-panel2 px-2 py-1.5 text-sm outline-none focus:border-fel-blue"
+        className="col-span-4 rounded-md border border-fel-border bg-fel-panel2 px-2 py-1.5 text-sm outline-none focus:border-fel-red"
       />
       <input
         value={quantity}
         onChange={(e) => setQuantity(e.target.value)}
         placeholder="Qty"
-        className="col-span-2 rounded-md border border-fel-border bg-fel-panel2 px-2 py-1.5 text-sm outline-none focus:border-fel-blue"
+        className="col-span-2 rounded-md border border-fel-border bg-fel-panel2 px-2 py-1.5 text-sm outline-none focus:border-fel-red"
       />
       <input
         value={notes}
         onChange={(e) => setNotes(e.target.value)}
         placeholder="Notes"
-        className="col-span-3 rounded-md border border-fel-border bg-fel-panel2 px-2 py-1.5 text-sm outline-none focus:border-fel-blue"
+        className="col-span-3 rounded-md border border-fel-border bg-fel-panel2 px-2 py-1.5 text-sm outline-none focus:border-fel-red"
       />
       <button
         type="submit"

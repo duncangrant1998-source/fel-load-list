@@ -91,7 +91,7 @@ export default function AdminTeamPage() {
     <div>
       <NavBar />
       <main className="mx-auto max-w-3xl px-4 py-8">
-        <h1 className="mb-2 text-2xl font-semibold tracking-tight">Team</h1>
+        <h1 className="mb-2 text-2xl font-semibold uppercase tracking-wide">Team</h1>
         <p className="mb-6 text-sm text-neutral-400">
           Invite a team member or set who the warehouse manager is. Invited
           people get an email with a link to set their own password.
@@ -105,19 +105,19 @@ export default function AdminTeamPage() {
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
             placeholder="Full name"
-            className="rounded-lg border border-fel-border bg-fel-panel2 px-3 py-2 text-sm outline-none focus:border-fel-blue sm:col-span-2"
+            className="rounded-lg border border-fel-border bg-fel-panel2 px-3 py-2 text-sm outline-none focus:border-fel-red sm:col-span-2"
           />
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="email@feldrives.com"
-            className="rounded-lg border border-fel-border bg-fel-panel2 px-3 py-2 text-sm outline-none focus:border-fel-blue sm:col-span-2"
+            className="rounded-lg border border-fel-border bg-fel-panel2 px-3 py-2 text-sm outline-none focus:border-fel-red sm:col-span-2"
           />
           <select
             value={role}
             onChange={(e) => setRole(e.target.value)}
-            className="rounded-lg border border-fel-border bg-fel-panel2 px-3 py-2 text-sm outline-none focus:border-fel-blue"
+            className="rounded-lg border border-fel-border bg-fel-panel2 px-3 py-2 text-sm outline-none focus:border-fel-red"
           >
             <option value="staff">Team member</option>
             <option value="manager">Warehouse manager</option>
@@ -152,7 +152,7 @@ export default function AdminTeamPage() {
                   <td className="px-4 py-2">
                     {p.full_name}
                     {p.is_admin && (
-                      <span className="ml-2 rounded-full bg-fel-blue/20 px-2 py-0.5 text-[10px] font-semibold uppercase text-fel-blue">
+                      <span className="ml-2 rounded-full bg-fel-red/20 px-2 py-0.5 text-[10px] font-semibold uppercase text-fel-red">
                         Admin
                       </span>
                     )}

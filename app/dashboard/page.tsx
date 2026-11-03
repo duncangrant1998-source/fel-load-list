@@ -9,7 +9,7 @@ import { STATUS_LABEL, type LoadList } from "@/lib/types";
 
 const STATUS_COLORS: Record<string, string> = {
   active: "bg-fel-green/20 text-fel-green",
-  departed: "bg-fel-blue/20 text-fel-blue",
+  departed: "bg-fel-red/20 text-fel-red",
   returned: "bg-neutral-500/20 text-neutral-300",
   archived: "bg-neutral-700/40 text-neutral-500",
 };
@@ -76,7 +76,7 @@ export default function DashboardPage() {
       <main className="mx-auto max-w-6xl px-4 py-8">
         <div className="mb-6 flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight">
+            <h1 className="text-2xl font-semibold uppercase tracking-wide">
               Load lists
             </h1>
             <p className="text-sm text-neutral-400">
@@ -86,7 +86,7 @@ export default function DashboardPage() {
           </div>
           <button
             onClick={() => setShowNew(true)}
-            className="rounded-lg bg-fel-red px-4 py-2 text-sm font-medium text-white hover:bg-fel-red/90"
+            className="rounded-lg bg-fel-red px-4 py-2 text-sm font-medium uppercase tracking-wide text-white hover:bg-fel-red/90"
           >
             + New load list
           </button>
@@ -120,7 +120,7 @@ export default function DashboardPage() {
               <button
                 key={list.id}
                 onClick={() => router.push(`/lists/${list.id}`)}
-                className="flex flex-col rounded-xl border border-fel-border bg-fel-panel p-4 text-left transition hover:border-fel-blue"
+                className="flex flex-col rounded-xl border border-fel-border bg-fel-panel p-4 text-left transition hover:border-fel-red"
               >
                 <div className="mb-2 flex items-start justify-between gap-2">
                   <h3 className="font-semibold leading-snug">{list.program}</h3>

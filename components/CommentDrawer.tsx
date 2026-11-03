@@ -137,7 +137,7 @@ export default function CommentDrawer({
               value={body}
               onChange={(e) => setBody(e.target.value)}
               placeholder="Ask a question or leave a note..."
-              className="flex-1 rounded-lg border border-fel-border bg-fel-panel2 px-3 py-2 text-sm outline-none focus:border-fel-blue"
+              className="flex-1 rounded-lg border border-fel-border bg-fel-panel2 px-3 py-2 text-sm outline-none focus:border-fel-red"
             />
             <button
               type="submit"

@@ -96,7 +96,7 @@ export default function NotificationsPage() {
       <NavBar />
       <main className="mx-auto max-w-3xl px-4 py-8">
         <div className="mb-6 flex items-center justify-between">
-          <h1 className="text-2xl font-semibold tracking-tight">
+          <h1 className="text-2xl font-semibold uppercase tracking-wide">
             Notifications
           </h1>
           <button
@@ -125,7 +125,7 @@ export default function NotificationsPage() {
                   className={`block w-full rounded-lg border p-3 text-left transition ${
                     n.read_at
                       ? "border-fel-border bg-fel-panel/60 text-neutral-400"
-                      : "border-fel-blue/40 bg-fel-panel"
+                      : "border-fel-red/40 bg-fel-panel"
                   }`}
                 >
                   <div className="mb-1 flex items-center gap-2">

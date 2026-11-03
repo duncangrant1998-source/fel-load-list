@@ -6,18 +6,18 @@ const config: Config = {
     extend: {
       colors: {
         fel: {
-          bg: "#0f1115",
-          panel: "#171a21",
-          panel2: "#1f232c",
-          border: "#2a2f3a",
-          red: "#d1272d",
-          blue: "#1f6feb",
-          green: "#1f8a4c",
+          bg: "#06191d",
+          panel: "#0c2126",
+          panel2: "#132a30",
+          border: "#1f3b42",
+          red: "#c72127",
+          blue: "#3b8fc4",
+          green: "#2e9e5b",
           amber: "#e0a30f",
         },
       },
       fontFamily: {
-        sans: ["Helvetica Neue", "Helvetica", "Arial", "sans-serif"],
+        sans: ["Avenir", "Helvetica Neue", "Helvetica", "Arial", "sans-serif"],
       },
     },
   },
