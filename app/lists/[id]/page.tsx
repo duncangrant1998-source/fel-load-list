@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import NavBar from "@/components/NavBar";
@@ -8,6 +8,7 @@ import AddItemForm from "@/components/AddItemForm";
 import CommentDrawer from "@/components/CommentDrawer";
 import ModeField from "@/components/ModeField";
 import ManageAccessPanel from "@/components/ManageAccessPanel";
+import { csvRowsToItems, parseCsv } from "@/lib/csv";
 import {
   STATUS_LABEL,
   type LoadList,
@@ -40,6 +41,9 @@ function LoadListDetailInner() {
   const [showAccess, setShowAccess] = useState(false);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const [importError, setImportError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const supabase = createClient();
@@ -203,6 +207,41 @@ function LoadListDetailInner() {
     await supabase.from("load_list_items").delete().eq("id", item.id);
   }
 
+  async function handleImportFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // allow re-selecting the same file later
+    if (!file || !currentUserId) return;
+
+    setImportError(null);
+    setImporting(true);
+    try {
+      const text = await file.text();
+      const rows = csvRowsToItems(parseCsv(text));
+      if (rows.length === 0) {
+        setImportError(
+          "No items found in that file. Expected columns: category, item, quantity, notes."
+        );
+        return;
+      }
+      const supabase = createClient();
+      const { error } = await supabase.from("load_list_items").insert(
+        rows.map((r) => ({
+          load_list_id: listId,
+          category: r.category || "General",
+          name: r.name,
+          quantity: r.quantity,
+          notes: r.notes,
+          created_by: currentUserId,
+        }))
+      );
+      if (error) setImportError(error.message);
+    } catch {
+      setImportError("Couldn't read that file. Make sure it's a CSV.");
+    } finally {
+      setImporting(false);
+    }
+  }
+
   if (notFound) {
     return (
       <div>
@@ -247,6 +286,27 @@ function LoadListDetailInner() {
               >
                 Export PDF
               </a>
+              <a
+                href={`/api/lists/${listId}/csv`}
+                className="rounded-full border border-fel-border px-3 py-1 text-xs font-medium uppercase tracking-wide text-neutral-300 hover:bg-fel-panel2"
+              >
+                Export CSV
+              </a>
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={importing}
+                className="rounded-full border border-fel-border px-3 py-1 text-xs font-medium uppercase tracking-wide text-neutral-300 hover:bg-fel-panel2 disabled:opacity-50"
+              >
+                {importing ? "Importing..." : "Import CSV"}
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".csv,text/csv"
+                onChange={handleImportFile}
+                className="hidden"
+              />
               <button
                 onClick={() => setShowAccess(true)}
                 className="rounded-full border border-fel-border px-3 py-1 text-xs font-medium uppercase tracking-wide text-neutral-300 hover:bg-fel-panel2"
@@ -276,6 +336,11 @@ function LoadListDetailInner() {
           <div className="mt-4 text-xs uppercase tracking-wide text-neutral-500">
             {packedCount} / {items.length} items packed
           </div>
+          {importError && (
+            <p className="mt-2 rounded-md bg-fel-red/10 px-3 py-2 text-xs text-fel-red">
+              {importError}
+            </p>
+          )}
         </div>
 
         <div className="space-y-6">
