@@ -36,9 +36,9 @@ export default function ManageAccessPanel({
   }, [loadListId]);
 
   async function toggleMember(userId: string) {
-    const supabase = createClient();
     const isMember = memberIds.has(userId);
     if (isMember) {
+      const supabase = createClient();
       await supabase
         .from("load_list_members")
         .delete()
@@ -50,9 +50,13 @@ export default function ManageAccessPanel({
         return next;
       });
     } else {
-      await supabase
-        .from("load_list_members")
-        .insert({ load_list_id: loadListId, user_id: userId, added_by: currentUserId });
+      // Goes through the API route (not a direct client insert) so the
+      // newly-added teammate gets an email about it.
+      await fetch(`/api/lists/${loadListId}/members`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_ids: [userId] }),
+      });
       setMemberIds((prev) => new Set(prev).add(userId));
     }
   }

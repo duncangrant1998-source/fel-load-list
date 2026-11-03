@@ -81,13 +81,13 @@ export default function NewLoadListModal({
       return;
     }
     if (selectedMembers.size > 0) {
-      await supabase.from("load_list_members").insert(
-        Array.from(selectedMembers).map((user_id) => ({
-          load_list_id: data.id,
-          user_id,
-          added_by: user.id,
-        }))
-      );
+      // Goes through the API route (not a direct client insert) so each
+      // newly-added teammate gets an email about the new load list.
+      await fetch(`/api/lists/${data.id}/members`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_ids: Array.from(selectedMembers) }),
+      });
     }
     setSaving(false);
     onCreated(data.id);
