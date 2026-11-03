@@ -12,11 +12,13 @@
     "@supabase/ssr": "0.5.2",
     "@supabase/supabase-js": "2.45.4",
     "next": "14.2.35",
+    "pdfkit": "0.15.0",
     "react": "18.3.1",
     "react-dom": "18.3.1"
   },
   "devDependencies": {
     "@types/node": "20.14.0",
+    "@types/pdfkit": "0.13.4",
     "@types/react": "18.3.3",
     "@types/react-dom": "18.3.0",
     "autoprefixer": "10.4.19",

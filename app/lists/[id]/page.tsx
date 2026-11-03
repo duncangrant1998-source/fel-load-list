@@ -241,6 +241,12 @@ function LoadListDetailInner() {
               className="w-full bg-transparent text-xl font-semibold uppercase tracking-wide outline-none focus:border-b focus:border-fel-red"
             />
             <div className="flex shrink-0 items-center gap-2">
+              <a
+                href={`/api/lists/${listId}/pdf`}
+                className="rounded-full border border-fel-border px-3 py-1 text-xs font-medium uppercase tracking-wide text-neutral-300 hover:bg-fel-panel2"
+              >
+                Export PDF
+              </a>
               <button
                 onClick={() => setShowAccess(true)}
                 className="rounded-full border border-fel-border px-3 py-1 text-xs font-medium uppercase tracking-wide text-neutral-300 hover:bg-fel-panel2"
