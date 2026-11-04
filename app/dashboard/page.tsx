@@ -20,6 +20,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [showNew, setShowNew] = useState(false);
   const [filter, setFilter] = useState<string>("all");
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
     const supabase = createClient();
@@ -70,6 +71,24 @@ export default function DashboardPage() {
     [lists, filter]
   );
 
+  async function handleDelete(e: React.MouseEvent, list: LoadList) {
+    e.stopPropagation();
+    const confirmed = window.confirm(
+      `Delete "${list.program || "this load list"}"? This permanently removes it and everything on it — items, comments, and access. This can't be undone.`
+    );
+    if (!confirmed) return;
+
+    setDeletingId(list.id);
+    const supabase = createClient();
+    const { error } = await supabase.from("load_lists").delete().eq("id", list.id);
+    setDeletingId(null);
+    if (error) {
+      window.alert(`Couldn't delete that load list: ${error.message}`);
+      return;
+    }
+    setLists((prev) => prev.filter((l) => l.id !== list.id));
+  }
+
   return (
     <div>
       <NavBar />
@@ -117,18 +136,53 @@ export default function DashboardPage() {
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {visible.map((list) => (
-              <button
+              <div
                 key={list.id}
+                role="button"
+                tabIndex={0}
                 onClick={() => router.push(`/lists/${list.id}`)}
-                className="flex flex-col rounded-xl border border-fel-border bg-fel-panel p-4 text-left transition hover:border-fel-red"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    router.push(`/lists/${list.id}`);
+                  }
+                }}
+                className="flex cursor-pointer flex-col rounded-xl border border-fel-border bg-fel-panel p-4 text-left transition hover:border-fel-red"
               >
                 <div className="mb-2 flex items-start justify-between gap-2">
                   <h3 className="font-semibold leading-snug">{list.program}</h3>
-                  <span
-                    className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${STATUS_COLORS[list.status]}`}
-                  >
-                    {STATUS_LABEL[list.status]}
-                  </span>
+                  <div className="flex shrink-0 items-center gap-1.5">
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${STATUS_COLORS[list.status]}`}
+                    >
+                      {STATUS_LABEL[list.status]}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={(e) => handleDelete(e, list)}
+                      disabled={deletingId === list.id}
+                      aria-label={`Delete ${list.program || "load list"}`}
+                      title="Delete load list"
+                      className="rounded-md p-1 text-neutral-500 transition hover:bg-fel-red/10 hover:text-fel-red disabled:opacity-50"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="h-4 w-4"
+                      >
+                        <path d="M3 6h18" />
+                        <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                        <path d="M10 11v6" />
+                        <path d="M14 11v6" />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
                 <dl className="space-y-1 text-xs text-neutral-400">
                   <div className="flex gap-1">
@@ -150,7 +204,7 @@ export default function DashboardPage() {
                     </dd>
                   </div>
                 </dl>
-              </button>
+              </div>
             ))}
           </div>
         )}
