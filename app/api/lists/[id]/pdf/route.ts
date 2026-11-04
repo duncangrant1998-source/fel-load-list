@@ -116,6 +116,13 @@ function renderLoadListPdf(
 
     // --- Program title + status pill ---------------------------------
     doc
+      .fillColor(MUTED)
+      .font("Helvetica")
+      .fontSize(7.5)
+      .text("PROGRAM", doc.page.margins.left, doc.y, { characterSpacing: 0.5 });
+    doc.y += 2;
+
+    doc
       .fillColor(INK)
       .font("Helvetica-Bold")
       .fontSize(18)
@@ -180,9 +187,13 @@ function renderLoadListPdf(
     doc.moveDown(0.6);
 
     // --- Items grouped by category --------------------------------------
+    // Numbered continuously (not reset per category) in the same
+    // chronological order items appear in the app, so a printed copy can
+    // be checked off by hand and referenced by number.
     const categories = Array.from(new Set(items.map((i) => i.category)));
-    const colPacked = doc.page.margins.left;
-    const colItem = colPacked + 22;
+    const colBox = doc.page.margins.left;
+    const colNum = colBox + 20;
+    const colItem = colNum + 22;
     const colQty = doc.page.margins.left + pageWidth - 150;
     const colNotes = doc.page.margins.left + pageWidth - 110;
     const notesWidth = pageWidth - (colNotes - doc.page.margins.left);
@@ -191,6 +202,7 @@ function renderLoadListPdf(
       doc.font("Helvetica-Oblique").fontSize(10).fillColor(MUTED).text("No items were added to this load list.");
     }
 
+    let itemNumber = 0;
     for (const category of categories) {
       ensureSpace(doc, 40);
       doc
@@ -206,7 +218,7 @@ function renderLoadListPdf(
         .font("Helvetica-Bold")
         .fontSize(8)
         .fillColor(MUTED)
-        .text("", colPacked, headerY, { width: 18 })
+        .text("#", colNum, headerY, { width: 20 })
         .text("ITEM", colItem, headerY)
         .text("QTY", colQty, headerY, { width: 40 })
         .text("NOTES", colNotes, headerY, { width: notesWidth });
@@ -220,6 +232,7 @@ function renderLoadListPdf(
       doc.moveDown(0.3);
 
       for (const item of items.filter((i) => i.category === category)) {
+        itemNumber += 1;
         const rowHeight = Math.max(
           16,
           doc.heightOfString(item.name || "", { width: colQty - colItem - 10 }),
@@ -228,11 +241,13 @@ function renderLoadListPdf(
         ensureSpace(doc, rowHeight + 6);
 
         const rowY = doc.y;
+        drawCheckbox(doc, colBox, rowY + 1, item.packed);
         doc
           .font("Helvetica")
           .fontSize(9.5)
+          .fillColor(MUTED)
+          .text(String(itemNumber), colNum, rowY, { width: 20 })
           .fillColor(INK)
-          .text(item.packed ? "✓" : "☐", colPacked, rowY, { width: 18 })
           .text(item.name || "", colItem, rowY, { width: colQty - colItem - 10 })
           .fillColor(MUTED)
           .text(item.quantity || "", colQty, rowY, { width: 40 })
@@ -245,6 +260,24 @@ function renderLoadListPdf(
 
     doc.end();
   });
+}
+
+// A drawn square, not a Unicode checkbox glyph — PDFKit's standard
+// Helvetica font only supports WinAnsi encoding, so "☐"/"✓" characters
+// silently got replaced with "&". This renders correctly for anyone
+// (checked or print-and-check-by-hand) regardless of font support.
+function drawCheckbox(doc: PDFKit.PDFDocument, x: number, y: number, checked: boolean) {
+  const size = 9;
+  doc.rect(x, y, size, size).lineWidth(0.75).strokeColor(INK).stroke();
+  if (checked) {
+    doc
+      .moveTo(x + 1.5, y + size / 2)
+      .lineTo(x + size / 2.3, y + size - 2)
+      .lineTo(x + size - 1, y + 1.5)
+      .lineWidth(1.3)
+      .strokeColor(RED)
+      .stroke();
+  }
 }
 
 function ensureSpace(doc: PDFKit.PDFDocument, needed: number) {
