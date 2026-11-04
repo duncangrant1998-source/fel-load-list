@@ -73,45 +73,46 @@ function renderLoadListPdf(
     doc.on("end", () => resolve(Buffer.concat(chunks)));
     doc.on("error", reject);
 
-    const logoPath = path.join(process.cwd(), "public", "fel-icon.png");
+    const logoPath = path.join(process.cwd(), "public", "fel-full-logo.jpg");
     const pageWidth = doc.page.width - doc.page.margins.left - doc.page.margins.right;
 
-    // --- Header -----------------------------------------------------
+    // --- Header: logo on the far left, "WAREHOUSE LOAD LIST" under it --
+    const logoTop = 40;
+    const logoWidth = 120;
+    const logoHeight = logoWidth * (1372 / 2576);
     try {
-      doc.image(logoPath, doc.page.margins.left, 44, { width: 28 });
+      doc.image(logoPath, doc.page.margins.left, logoTop, { width: logoWidth });
     } catch {
       // Logo is a nice-to-have; a missing file shouldn't break the export.
     }
     doc
-      .fillColor(INK)
-      .font("Helvetica-Bold")
-      .fontSize(10)
-      .text("FEL MOTORSPORTS", doc.page.margins.left + 38, 48, {
-        characterSpacing: 1,
-      });
-    doc
       .fillColor(MUTED)
-      .font("Helvetica")
+      .font("Helvetica-Bold")
       .fontSize(9)
-      .text("WAREHOUSE LOAD LIST", doc.page.margins.left + 38, 61, {
-        characterSpacing: 1,
-      });
+      .text(
+        "WAREHOUSE LOAD LIST",
+        doc.page.margins.left,
+        logoTop + logoHeight + 8,
+        { characterSpacing: 1.2 }
+      );
 
     doc
       .fillColor(MUTED)
       .fontSize(8)
-      .text(`Exported ${new Date().toLocaleString("en-CA")}`, {
+      .text(`Exported ${new Date().toLocaleString("en-CA")}`, doc.page.margins.left, logoTop, {
+        width: pageWidth,
         align: "right",
       });
 
+    doc.y = logoTop + logoHeight + 28;
     doc
-      .moveTo(doc.page.margins.left, 92)
-      .lineTo(doc.page.width - doc.page.margins.right, 92)
+      .moveTo(doc.page.margins.left, doc.y)
+      .lineTo(doc.page.width - doc.page.margins.right, doc.y)
       .strokeColor(RED)
       .lineWidth(2)
       .stroke();
 
-    doc.y = 108;
+    doc.y += 16;
 
     // --- Program title + status pill ---------------------------------
     doc
