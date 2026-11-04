@@ -74,21 +74,22 @@ export default function NavBar() {
 
   return (
     <header className="sticky top-0 z-20 border-b border-fel-border bg-fel-bg/95 backdrop-blur">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-        <div className="flex items-center gap-6">
-          <Link href="/dashboard" className="flex items-center gap-2.5">
+      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-3">
+        <div className="flex min-w-0 items-center gap-4 sm:gap-6">
+          <Link href="/dashboard" className="flex shrink-0 items-center gap-2.5">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/fel-icon.svg" alt="FEL" width={22} height={22} />
             <span className="text-sm font-semibold uppercase tracking-wide">
               Load List
             </span>
           </Link>
-          <nav className="flex items-center gap-1">
+          <nav className="flex items-center gap-1 overflow-x-auto">
             <Link href="/dashboard" className={linkClass("/dashboard")}>
               Load lists
             </Link>
             <Link href="/notifications" className={linkClass("/notifications")}>
-              Notifications
+              <span className="sm:hidden">Alerts</span>
+              <span className="hidden sm:inline">Notifications</span>
               {unread > 0 && (
                 <span className="ml-1.5 inline-flex min-w-[1.25rem] items-center justify-center rounded-full bg-fel-red px-1.5 py-0.5 text-[10px] font-bold text-white">
                   {unread}
@@ -102,7 +103,7 @@ export default function NavBar() {
             )}
           </nav>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
           <span
             aria-hidden
             className="hidden select-none text-lg font-bold italic leading-none text-fel-red sm:inline"
@@ -111,15 +112,17 @@ export default function NavBar() {
           </span>
           {profile && (
             <div className="text-right leading-tight">
-              <div className="text-sm font-medium">{profile.full_name}</div>
-              <div className="text-xs uppercase tracking-wide text-neutral-500">
+              <div className="max-w-[6rem] truncate text-sm font-medium sm:max-w-none">
+                {profile.full_name}
+              </div>
+              <div className="hidden text-xs uppercase tracking-wide text-neutral-500 sm:block">
                 {profile.role === "manager" ? "Warehouse Manager" : "Team member"}
               </div>
             </div>
           )}
           <button
             onClick={handleSignOut}
-            className="rounded-md border border-fel-border px-3 py-1.5 text-xs font-medium text-neutral-300 hover:bg-fel-panel2"
+            className="shrink-0 rounded-md border border-fel-border px-2.5 py-1.5 text-xs font-medium text-neutral-300 hover:bg-fel-panel2 sm:px-3"
           >
             Sign out
           </button>

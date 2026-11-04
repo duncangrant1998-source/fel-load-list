@@ -45,14 +45,14 @@ export default function AddItemForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="grid grid-cols-12 gap-2 rounded-lg border border-dashed border-fel-border bg-fel-panel2/50 p-2"
+      className="grid grid-cols-2 gap-2 rounded-lg border border-dashed border-fel-border bg-fel-panel2/50 p-2 sm:grid-cols-12"
     >
       <input
         list="categories"
         value={category}
         onChange={(e) => setCategory(e.target.value)}
         placeholder="Category"
-        className="col-span-2 rounded-md border border-fel-border bg-fel-panel2 px-2 py-1.5 text-sm outline-none focus:border-fel-red"
+        className="rounded-md border border-fel-border bg-fel-panel2 px-2 py-1.5 text-sm outline-none focus:border-fel-red sm:col-span-2"
       />
       <datalist id="categories">
         {categories.map((c) => (
@@ -60,27 +60,27 @@ export default function AddItemForm({
         ))}
       </datalist>
       <input
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        placeholder="Item name"
-        className="col-span-4 rounded-md border border-fel-border bg-fel-panel2 px-2 py-1.5 text-sm outline-none focus:border-fel-red"
-      />
-      <input
         value={quantity}
         onChange={(e) => setQuantity(e.target.value)}
         placeholder="Qty"
-        className="col-span-2 rounded-md border border-fel-border bg-fel-panel2 px-2 py-1.5 text-sm outline-none focus:border-fel-red"
+        className="rounded-md border border-fel-border bg-fel-panel2 px-2 py-1.5 text-sm outline-none focus:border-fel-red sm:order-3 sm:col-span-2"
+      />
+      <input
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder="Item name"
+        className="col-span-2 rounded-md border border-fel-border bg-fel-panel2 px-2 py-1.5 text-sm outline-none focus:border-fel-red sm:order-2 sm:col-span-4"
       />
       <input
         value={notes}
         onChange={(e) => setNotes(e.target.value)}
         placeholder="Notes"
-        className="col-span-3 rounded-md border border-fel-border bg-fel-panel2 px-2 py-1.5 text-sm outline-none focus:border-fel-red"
+        className="col-span-2 rounded-md border border-fel-border bg-fel-panel2 px-2 py-1.5 text-sm outline-none focus:border-fel-red sm:order-4 sm:col-span-3"
       />
       <button
         type="submit"
         disabled={saving || !name.trim()}
-        className="col-span-1 rounded-md bg-fel-red px-2 py-1.5 text-xs font-medium text-white hover:bg-fel-red/90 disabled:opacity-50"
+        className="col-span-2 rounded-md bg-fel-red px-2 py-1.5 text-xs font-medium text-white hover:bg-fel-red/90 disabled:opacity-50 sm:order-5 sm:col-span-1"
       >
         Add
       </button>

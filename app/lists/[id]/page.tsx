@@ -272,59 +272,57 @@ function LoadListDetailInner() {
     <div>
       <NavBar />
       <main className="mx-auto max-w-5xl px-4 py-8">
-        <div className="mb-6 rounded-xl border border-fel-border bg-fel-panel p-5">
-          <div className="mb-4 flex items-start justify-between gap-4">
+        <div className="mb-6 rounded-xl border border-fel-border bg-fel-panel p-4 sm:p-5">
+          <input
+            defaultValue={list.program}
+            onBlur={(e) => updateHeaderField("program", e.target.value)}
+            className="mb-3 w-full bg-transparent text-xl font-semibold uppercase tracking-wide outline-none focus:border-b focus:border-fel-red"
+          />
+          <div className="mb-4 flex flex-wrap items-center gap-2">
+            <a
+              href={`/api/lists/${listId}/pdf`}
+              className="rounded-full border border-fel-border px-3 py-1 text-xs font-medium uppercase tracking-wide text-neutral-300 hover:bg-fel-panel2"
+            >
+              Export PDF
+            </a>
+            <a
+              href={`/api/lists/${listId}/csv`}
+              className="rounded-full border border-fel-border px-3 py-1 text-xs font-medium uppercase tracking-wide text-neutral-300 hover:bg-fel-panel2"
+            >
+              Export CSV
+            </a>
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={importing}
+              className="rounded-full border border-fel-border px-3 py-1 text-xs font-medium uppercase tracking-wide text-neutral-300 hover:bg-fel-panel2 disabled:opacity-50"
+            >
+              {importing ? "Importing..." : "Import CSV"}
+            </button>
             <input
-              defaultValue={list.program}
-              onBlur={(e) => updateHeaderField("program", e.target.value)}
-              className="w-full bg-transparent text-xl font-semibold uppercase tracking-wide outline-none focus:border-b focus:border-fel-red"
+              ref={fileInputRef}
+              type="file"
+              accept=".csv,text/csv"
+              onChange={handleImportFile}
+              className="hidden"
             />
-            <div className="flex shrink-0 items-center gap-2">
-              <a
-                href={`/api/lists/${listId}/pdf`}
-                className="rounded-full border border-fel-border px-3 py-1 text-xs font-medium uppercase tracking-wide text-neutral-300 hover:bg-fel-panel2"
-              >
-                Export PDF
-              </a>
-              <a
-                href={`/api/lists/${listId}/csv`}
-                className="rounded-full border border-fel-border px-3 py-1 text-xs font-medium uppercase tracking-wide text-neutral-300 hover:bg-fel-panel2"
-              >
-                Export CSV
-              </a>
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={importing}
-                className="rounded-full border border-fel-border px-3 py-1 text-xs font-medium uppercase tracking-wide text-neutral-300 hover:bg-fel-panel2 disabled:opacity-50"
-              >
-                {importing ? "Importing..." : "Import CSV"}
-              </button>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".csv,text/csv"
-                onChange={handleImportFile}
-                className="hidden"
-              />
-              <button
-                onClick={() => setShowAccess(true)}
-                className="rounded-full border border-fel-border px-3 py-1 text-xs font-medium uppercase tracking-wide text-neutral-300 hover:bg-fel-panel2"
-              >
-                Manage access
-              </button>
-              <select
-                defaultValue={list.status}
-                onChange={(e) => updateHeaderField("status", e.target.value as LoadListStatus)}
-                className="rounded-full border border-fel-border bg-fel-panel2 px-3 py-1 text-xs font-medium uppercase tracking-wide"
-              >
-                {Object.entries(STATUS_LABEL).map(([val, label]) => (
-                  <option key={val} value={val}>
-                    {label}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <button
+              onClick={() => setShowAccess(true)}
+              className="rounded-full border border-fel-border px-3 py-1 text-xs font-medium uppercase tracking-wide text-neutral-300 hover:bg-fel-panel2"
+            >
+              Manage access
+            </button>
+            <select
+              defaultValue={list.status}
+              onChange={(e) => updateHeaderField("status", e.target.value as LoadListStatus)}
+              className="rounded-full border border-fel-border bg-fel-panel2 px-3 py-1 text-xs font-medium uppercase tracking-wide"
+            >
+              {Object.entries(STATUS_LABEL).map(([val, label]) => (
+                <option key={val} value={val}>
+                  {label}
+                </option>
+              ))}
+            </select>
           </div>
           <div className="grid grid-cols-2 gap-4 text-sm sm:grid-cols-5">
             <Field label="Program lead / contact" defaultValue={list.contact_name} onBlur={(v) => updateHeaderField("contact_name", v)} />
@@ -354,7 +352,8 @@ function LoadListDetailInner() {
               <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-neutral-400">
                 {cat}
               </h2>
-              <div className="overflow-hidden rounded-xl border border-fel-border">
+              {/* Desktop/tablet: full table */}
+              <div className="hidden overflow-hidden rounded-xl border border-fel-border sm:block">
                 <table className="w-full text-sm">
                   <tbody>
                     {grouped[cat].map((item) => (
@@ -402,6 +401,46 @@ function LoadListDetailInner() {
                     ))}
                   </tbody>
                 </table>
+              </div>
+
+              {/* Phone: stacked cards, easier to tap than a cramped table */}
+              <div className="divide-y divide-fel-border/60 overflow-hidden rounded-xl border border-fel-border sm:hidden">
+                {grouped[cat].map((item) => (
+                  <div key={item.id} className="flex items-start gap-3 p-3">
+                    <input
+                      type="checkbox"
+                      checked={item.packed}
+                      onChange={() => togglePacked(item)}
+                      className="mt-1 h-4 w-4 shrink-0 accent-fel-green"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-start justify-between gap-2">
+                        <span
+                          className={`text-sm ${item.packed ? "text-neutral-500 line-through" : "font-medium"}`}
+                        >
+                          {item.name}
+                        </span>
+                        <button
+                          onClick={() => deleteItem(item)}
+                          className="shrink-0 px-1 text-neutral-500 hover:text-fel-red"
+                          title="Remove item"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                      <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-neutral-400">
+                        {item.quantity && <span>Qty: {item.quantity}</span>}
+                        {item.notes && <span className="break-words">{item.notes}</span>}
+                        <button
+                          onClick={() => setActiveItem(item)}
+                          className="ml-auto shrink-0 rounded-md border border-fel-border px-2 py-1 text-xs text-neutral-300 hover:bg-fel-panel2"
+                        >
+                          💬 {commentCounts[item.id] ?? 0}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
               {currentUserId && (
                 <div className="mt-2">

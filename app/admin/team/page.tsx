@@ -137,8 +137,8 @@ export default function AdminTeamPage() {
           )}
         </form>
 
-        <div className="overflow-hidden rounded-xl border border-fel-border">
-          <table className="w-full text-sm">
+        <div className="overflow-x-auto rounded-xl border border-fel-border">
+          <table className="w-full min-w-[480px] text-sm">
             <thead className="bg-fel-panel2 text-left text-xs uppercase tracking-wide text-neutral-400">
               <tr>
                 <th className="px-4 py-2">Name</th>

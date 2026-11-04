@@ -192,8 +192,10 @@ function renderLoadListPdf(
     // be checked off by hand and referenced by number.
     const categories = Array.from(new Set(items.map((i) => i.category)));
     const colBox = doc.page.margins.left;
-    const colNum = colBox + 20;
-    const colItem = colNum + 22;
+    const boxSize = 9;
+    const numWidth = 16;
+    const colNum = colBox + boxSize + 8;
+    const colItem = colNum + numWidth + 8;
     const colQty = doc.page.margins.left + pageWidth - 150;
     const colNotes = doc.page.margins.left + pageWidth - 110;
     const notesWidth = pageWidth - (colNotes - doc.page.margins.left);
@@ -218,7 +220,7 @@ function renderLoadListPdf(
         .font("Helvetica-Bold")
         .fontSize(8)
         .fillColor(MUTED)
-        .text("#", colNum, headerY, { width: 20 })
+        .text("#", colNum, headerY, { width: numWidth, align: "right" })
         .text("ITEM", colItem, headerY)
         .text("QTY", colQty, headerY, { width: 40 })
         .text("NOTES", colNotes, headerY, { width: notesWidth });
@@ -241,12 +243,12 @@ function renderLoadListPdf(
         ensureSpace(doc, rowHeight + 6);
 
         const rowY = doc.y;
-        drawCheckbox(doc, colBox, rowY + 1, item.packed);
+        drawCheckbox(doc, colBox, rowY + 1.5, boxSize, item.packed);
         doc
           .font("Helvetica")
           .fontSize(9.5)
           .fillColor(MUTED)
-          .text(String(itemNumber), colNum, rowY, { width: 20 })
+          .text(String(itemNumber), colNum, rowY, { width: numWidth, align: "right" })
           .fillColor(INK)
           .text(item.name || "", colItem, rowY, { width: colQty - colItem - 10 })
           .fillColor(MUTED)
@@ -266,8 +268,7 @@ function renderLoadListPdf(
 // Helvetica font only supports WinAnsi encoding, so "☐"/"✓" characters
 // silently got replaced with "&". This renders correctly for anyone
 // (checked or print-and-check-by-hand) regardless of font support.
-function drawCheckbox(doc: PDFKit.PDFDocument, x: number, y: number, checked: boolean) {
-  const size = 9;
+function drawCheckbox(doc: PDFKit.PDFDocument, x: number, y: number, size: number, checked: boolean) {
   doc.rect(x, y, size, size).lineWidth(0.75).strokeColor(INK).stroke();
   if (checked) {
     doc

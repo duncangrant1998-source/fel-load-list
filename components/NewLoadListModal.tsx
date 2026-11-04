@@ -111,7 +111,7 @@ export default function NewLoadListModal({
               className="w-full rounded-lg border border-fel-border bg-fel-panel2 px-3 py-2 text-sm outline-none focus:border-fel-red"
             />
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
               <label className="mb-1 block text-xs font-medium uppercase tracking-wide text-neutral-400">
                 Program lead / contact
@@ -134,7 +134,7 @@ export default function NewLoadListModal({
               />
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <ModeField value={mode} onChange={setMode} />
             <div>
               <label className="mb-1 block text-xs font-medium uppercase tracking-wide text-neutral-400">
